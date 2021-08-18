@@ -10,13 +10,33 @@ function getRangeSum(min = 0, max = 1) {
     return sum;
 }
 
+let memoGetRangeSum = (function(){
+    const memo = {};
+
+    return function(min, max) {
+        let sum;
+        memo[min] = memo[min] || {};
+
+        if (min in memo && max in memo[min]) {
+            sum = memo[min][max];
+        }
+        else {
+            sum = getRangeSum(min, max);
+            memo[min][max] = sum;
+        }
+
+        return sum;
+    }
+})();
+
 window.addEventListener('DOMContentLoaded', () => {
     const inputs = document.querySelectorAll('input');
     const resultInput = document.querySelector('#result');
     const noticeP = document.querySelector('.note');
     document.querySelector('button').addEventListener('click', () => {
         try {
-            resultInput.value = getRangeSum(+inputs[0].value, +inputs[1].value);
+            noticeP.innerText = '';
+            resultInput.value = memoGetRangeSum(+inputs[0].value, +inputs[1].value);
         }
         catch(e) {
             noticeP.innerText = e.message;
